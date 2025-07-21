@@ -13,6 +13,12 @@
          <p>Dashboard</p>
        </a>
      </li>
+      <li class="nav-item">
+      <a href="<?= base_url('log') ?>" class="nav-link">
+        <i class="nav-icon fas fa-history"></i>
+        <p>Activity Logs</p>
+      </a>
+    </li>
      <li class="nav-item">
       <a href="<?= base_url('users') ?>" class="nav-link">
         <i class="nav-icon fas fa-user-lock"></i>

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use CodeIgniter\Controller;
+use App\Models\LogModel;
 
 class Users extends Controller
 {
@@ -26,6 +27,7 @@ class Users extends Controller
         }
 
         $userModel = new \App\Models\UserModel();
+        $logModel = new LogModel();
 
         // Check if email already exists
         $existingUser = $userModel->where('email', $email)->first();
@@ -45,6 +47,7 @@ class Users extends Controller
         ];
 
         if ($userModel->insert($data)) {
+            $logModel->addLog('New User has been added: ' . $name, 'ADD');
             return $this->response->setJSON(['status' => 'success']);
         } else {
             return $this->response->setJSON(['status' => 'error', 'message' => 'Failed to save user']);
@@ -52,33 +55,34 @@ class Users extends Controller
     }
 
     public function update(){
-    $model = new UserModel();
-    $userId = $this->request->getPost('id');
-    $name = $this->request->getPost('name');
-    $email = $this->request->getPost('email');
-    $password = $this->request->getPost('password');
-    $role = $this->request->getPost('role');
-    $status = $this->request->getPost('status');
-    $phone = $this->request->getPost('phone');
+        $model = new UserModel();
+        $logModel = new LogModel();
+        $userId = $this->request->getPost('id');
+        $name = $this->request->getPost('name');
+        $email = $this->request->getPost('email');
+        $password = $this->request->getPost('password');
+        $role = $this->request->getPost('role');
+        $status = $this->request->getPost('status');
+        $phone = $this->request->getPost('phone');
 
     // Validate the input
-    if (empty($email)) {
-        return $this->response->setJSON(['success' => false, 'message' => 'Email is required']);
-    }
+        if (empty($email)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Email is required']);
+        }
 
     // Check if email already exists for another user
-    $existingUser = $model->where('email', $email)
-                          ->where('id !=', $userId)
-                          ->first();
+        $existingUser = $model->where('email', $email)
+        ->where('id !=', $userId)
+        ->first();
 
-    if ($existingUser) {
-        return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Email is already in use by another user.'
-        ]);
-    }
+        if ($existingUser) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Email is already in use by another user.'
+            ]);
+        }
 
-    $userData = [
+        $userData = [
             'name'       => $name,
             'email'      => $email,
             'role'       => $role,
@@ -86,29 +90,30 @@ class Users extends Controller
             'phone'      => $phone,
             'updated_at' => date('Y-m-d H:i:s'),
             'deleted_at' => date('Y-m-d H:i:s')
-    ];
+        ];
 
-    if (!empty($password)) {
-        $userData['password'] = password_hash($password, PASSWORD_BCRYPT);
+        if (!empty($password)) {
+            $userData['password'] = password_hash($password, PASSWORD_BCRYPT);
+        }
+
+        $updated = $model->update($userId, $userData);
+
+        if ($updated) {
+            $logModel->addLog('New User has been apdated: ' . $name, 'UPDATED');
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'User updated successfully.'
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error updating user.'
+            ]);
+        }
     }
 
-    $updated = $model->update($userId, $userData);
-
-    if ($updated) {
-        return $this->response->setJSON([
-            'success' => true,
-            'message' => 'User updated successfully.'
-        ]);
-    } else {
-        return $this->response->setJSON([
-            'success' => false,
-            'message' => 'Error updating user.'
-        ]);
-    }
-}
-
-public function edit($id){
-    $model = new UserModel();
+    public function edit($id){
+        $model = new UserModel();
     $user = $model->find($id); // Fetch user by ID
 
     if ($user) {
@@ -118,9 +123,9 @@ public function edit($id){
     }
 }
 
- public function delete($id){
+public function delete($id){
     $model = new UserModel();
-    
+    $logModel = new LogModel();
     $user = $model->find($id);
     if (!$user) {
         return $this->response->setJSON(['success' => false, 'message' => 'User not found.']);
@@ -129,6 +134,7 @@ public function edit($id){
     $deleted = $model->delete($id);
 
     if ($deleted) {
+        $logModel->addLog('Delete user', 'DELETED');
         return $this->response->setJSON(['success' => true, 'message' => 'User deleted successfully.']);
     } else {
         return $this->response->setJSON(['success' => false, 'message' => 'Failed to delete user.']);

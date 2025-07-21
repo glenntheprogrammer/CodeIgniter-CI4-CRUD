@@ -20,3 +20,6 @@ $routes->get('users/edit/(:segment)', 'Users::edit/$1');
 $routes->post('users/update', 'Users::update');
 $routes->delete('users/delete/(:num)', 'Users::delete/$1');
 $routes->post('users/fetchRecords', 'Users::fetchRecords');
+
+// Logs routes for admin
+$routes->get('/log', 'Logs::log');

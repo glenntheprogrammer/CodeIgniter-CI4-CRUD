@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
+use App\Models\LogModel;
 use CodeIgniter\Controller;
 
 class Auth extends BaseController
@@ -79,9 +80,12 @@ class Auth extends BaseController
         $session->set([
             'user_id' => $user['id'],
             'email' => $user['email'],
+            'name' => $user['name'],
             'logged_in' => true,
             'last_activity' => time()
         ]);
+         $logModel = new LogModel();
+         $logModel->addLog('Login: ' .$user['name'], 'LOGIN');
         return redirect()->to('/dashboard');
     } else {
         // Log the failed attempt
@@ -98,6 +102,9 @@ class Auth extends BaseController
 
     public function logout()
     {
+         $logModel = new LogModel();
+         $logModel->addLog('Logout', 'LOGOUT');
+
         session()->destroy();
         return redirect()->to('/login');
     }
