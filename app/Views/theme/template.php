@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="font-size: 14px;">
 <head>
   <meta name="csrf-name" content="<?= csrf_token() ?>">
   <meta name="csrf-token" content="<?= csrf_hash() ?>">
@@ -35,15 +35,29 @@
 
   <?= $this->renderSection('content') ?>
 
-  <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong>
+ <footer class="main-footer no-print">
+    <strong>Copyright &copy; 2025 <a href="#">Glenn IT Solutions</a> </strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.2.0
+      <b>Version</b> CI4.v1
     </div>
   </footer>
-  <aside class="control-sidebar control-sidebar-dark">
-  </aside>
+<aside class="control-sidebar control-sidebar-dark">
+  <!-- Add padding so content isn’t stuck to edges -->
+  <div class="p-3">
+    <h5>Settings</h5>
+    <hr>
+    <div class="form-group">
+      <label>Option 1</label>
+      <input type="checkbox" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>Option 2</label>
+      <input type="checkbox" class="form-control">
+    </div>
+  </div>
+</aside>
+
 </div>
 <script src="<?= base_url('assets/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
 <script src="<?= base_url('assets/adminlte/plugins/jquery-ui/jquery-ui.min.js') ?>"></script>
@@ -79,3 +93,83 @@
 <?= $this->renderSection('scripts') ?>
 </body>
 </html>
+<script>
+const themeToggle = document.getElementById('themeToggle');
+const navbar = document.getElementById('mainNavbar');
+const sidebar = document.getElementById('mainSidebar');
+const brandLink = document.getElementById('brandLink');
+
+// Apply saved theme on load
+let savedTheme = localStorage.getItem('adminlteTheme');
+if(savedTheme === 'dark'){
+    document.body.classList.add('dark-mode');
+
+    // Navbar
+    navbar.classList.remove('navbar-warning');
+    navbar.classList.add('navbar-dark','bg-dark');
+
+    // Sidebar
+    sidebar.classList.remove('sidebar-light');
+    sidebar.classList.add('sidebar-dark-primary');
+
+    // Brand link
+    brandLink.classList.remove('bg-warning');
+    brandLink.classList.add('bg-dark');
+
+    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+} else {
+    // Light mode
+    navbar.classList.add('navbar-warning');
+
+    sidebar.classList.remove('sidebar-dark-primary');
+    sidebar.classList.add('sidebar-light');
+
+    brandLink.classList.remove('bg-dark');
+    brandLink.classList.add('bg-warning');
+
+    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+}
+
+// Toggle theme
+themeToggle.addEventListener('click', function(e){
+    e.preventDefault();
+
+    if(document.body.classList.contains('dark-mode')){
+        // Switch to light
+        document.body.classList.remove('dark-mode');
+
+        // Navbar
+        navbar.classList.remove('navbar-dark','bg-dark');
+        navbar.classList.add('navbar-warning');
+
+        // Sidebar
+        sidebar.classList.remove('sidebar-dark-primary');
+        sidebar.classList.add('sidebar-light');
+
+        // Brand link
+        brandLink.classList.remove('bg-dark');
+        brandLink.classList.add('bg-warning');
+
+        themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('adminlteTheme','light');
+    } else {
+        // Switch to dark
+        document.body.classList.add('dark-mode');
+
+        // Navbar
+        navbar.classList.remove('navbar-warning');
+        navbar.classList.add('navbar-dark','bg-dark');
+
+        // Sidebar
+        sidebar.classList.remove('sidebar-light');
+        sidebar.classList.add('sidebar-dark-primary');
+
+        // Brand link
+        brandLink.classList.remove('bg-warning');
+        brandLink.classList.add('bg-dark');
+
+        themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('adminlteTheme','dark');
+    }
+});
+</script>
